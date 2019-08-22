@@ -41,6 +41,14 @@ hermana(X, Y) :-
     mujer(X),
     dif(X, Y).
 
+% hermano/2. hermano(X, Y), X es hermano de Y.
+% Regla: si X es hombre, Z es progenitor de X, y Z progenitor de Y entonces, X es hermano de Y.
+hermano(X, Y) :-
+    progenitor(Z, X),
+    progenitor(Z, Y),
+    hombre(X),
+    dif(X, Y).
+
 % ancestro/2. ancestro(X, Z), X es ancestro de Z.
 % Regla: si X es progenitor de Z entonces, X es ancestro de Z.
 ancestro(X, Z) :-
