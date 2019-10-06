@@ -1,5 +1,5 @@
 %%% peanoNat/2. peanoNat(+Secuencia, -N).
-% N es el número de Peano dada la Secuencia.
+% N es el número de Peano dada una Secuencia. Ej. peanoNat(s(s(s(0))), N).
 peanoNat(Sec, N) :-
     is_nat(Sec, N).
 
