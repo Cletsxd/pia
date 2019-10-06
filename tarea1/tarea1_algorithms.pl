@@ -6,22 +6,22 @@ subset([], []).
 subset([], [_ | Rest]) :-
     subset([], Rest).
 % Caso 3: general. Cuando el ConjuntoA y ConjuntoB tienen elementos.
-subset([Element | Rest], Set) :-
-    member(Element, Set),
-    subset(Rest, Set).
+subset([Element | Rest], SetB) :-
+    member(Element, SetB),
+    subset(Rest, SetB).
 
 %%% inter/3. inter(+ConjuntoA, +ConjuntoB, -ConjuntoR). 
 % El ConjuntoR es la intersección del ConjuntoA con el ConjuntoB.
 % Caso 1: base.
 inter([], _, []).
 % Caso 2: recursivo. Cuando el Elemento no forma parte de Set.
-inter([Element | Rest], Set, List) :-
-    \+ member(Element, Set),
-    inter(Rest, Set, List).
+inter([Element | Rest], SetB, List) :-
+    \+ member(Element, SetB),
+    inter(Rest, SetB, List).
 % Caso 3: recursivo. Cuando el Elemento se encuentra en Set.
-inter([Element | Rest], Set, [Element | List]) :-
-    member(Element, Set),
-    inter(Rest, Set, List).
+inter([Element | Rest], SetB, [Element | List]) :-
+    member(Element, SetB),
+    inter(Rest, SetB, List).
 
 /*union([Element, Rest], SetB, SetR) :-
     member(Element, SetB).*/
