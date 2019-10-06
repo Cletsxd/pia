@@ -5,6 +5,6 @@ subset([], []).
 subset([], [_ | Rest]) :-
     subset([], Rest).
 % Caso 3: recursivo general. Cuando el ConjuntoA y ConjuntoB tienen elementos.
-subset([FirstElement | Rest], Set) :-
-    member(FirstElement, Set), % Si FirstElement es miembro de Set.
+subset([Element | Rest], Set) :-
+    member(Element, Set), % Si FirstElement es miembro de Set.
     subset(Rest, Set). % Busca el resto Rest en el ConjuntoB Set.
