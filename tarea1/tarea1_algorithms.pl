@@ -27,6 +27,8 @@ restaPeano(s(0), s(0), 0).
 % Caso 2: recursivo. Esta función realiza la agregación de s(R), cuando Secuencia2 llega a s(0).
 restaPeano(s(X1), s(0), s(R)) :-
     restaPeano(X1, s(0), R).
+% Caso 3: recursivo. La idea de esta función es reducir ambas secuencias solo hasta que
+    % la Sencuencia2 llegue a s(0), que es cuando entra en acción el Caso 2.
 restaPeano(s(X1), s(X2), R) :-
     restaPeano(X1, X2, R).
 
