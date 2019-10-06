@@ -1,0 +1,1 @@
+papa(juan, marta).
