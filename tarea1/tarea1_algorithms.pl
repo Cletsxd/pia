@@ -1,3 +1,24 @@
+%%% peanoNat/2. peanoNat(+Secuencia, -N).
+% N es el número de Peano dada la Secuencia.
+peanoNat(Sec, N) :-
+    is_nat(Sec, N).
+
+%%% is_nat/2. is_nat(+NumInSec, -N).
+% Si NumInSec (número en la Secuencia) es un número natural, N es número de Peano.
+% Basada en:
+    % 1. http://www.lcc.uma.es/~lopez/progdec/prolog/apuntes/02-basicas/tecnicas_basicas.pdf (páginas 1 - 7)
+    % 2. https://www.uv.mx/personal/aguerra/files/2019/08/pia-slides-02.pdf (slide 45)
+    % 3. http://enciclopedia.us.es/index.php/Axiomas_de_Peano
+% N es el número de Peano, el cual se computa dentro de esta función.
+% Cuando la función unifica a 0 con NumInSec (Caso 1), 
+    % N también unifica con 0, y computa (en Caso 2).
+% Caso 1: base.
+is_nat(0, 0).
+% Caso 2: recursivo.
+is_nat(s(X), N) :-
+    is_nat(X, N1),
+    N is N1 + 1.
+
 %%% subset/2. subset(+ConjuntoA, +ConjuntoB).
 % ConjuntoA es subconjunto de ConjuntoB.
 % Caso 1: base.
