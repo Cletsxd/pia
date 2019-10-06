@@ -20,10 +20,12 @@ sumaPeano(s(0), s(X2), s(R)) :-
 sumaPeano(s(X1), Sec2, s(R)) :-
     sumaPeano(X1, Sec2, R).
 
+%%% restaPeano/3. restaPeano(+Secuencia1, +Secuencia2, -Resultado).
+% Resultado es la resta de Peano de Secuencia1 menos Sencuencia2.
+% Caso 1: base. Esta cláusula entra en función cuando ambas secuencias llegan a s(0), por lo tanto, se devuele un 0.
 restaPeano(s(0), s(0), 0).
+% Caso 2: recursivo. Esta función realiza la agregación de s(R), cuando Secuencia2 llega a s(0).
 restaPeano(s(X1), s(0), s(R)) :-
-    restaPeano(X1, s(0), R).
-restaPeano(s(X1), s(0), R) :-
     restaPeano(X1, s(0), R).
 restaPeano(s(X1), s(X2), R) :-
     restaPeano(X1, X2, R).
