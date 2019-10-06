@@ -1,7 +1,28 @@
 %%% peanoNat/2. peanoNat(+Secuencia, -N).
+% Basado en is_nat/2.
 % N es el número de Peano dada una Secuencia. Ej. peanoNat(s(s(s(0))), N).
-peanoToNat(Sec, N) :-
-    is_nat(Sec, N).
+% Caso 1: base. Cuando la Secuencia llega a 0, entonces \theta = {N/0}.
+peanoToNat(0, 0).
+% Caso 2: recursivo. Función que se dedica a sumar los sucesores y a reducir a Secuencia hasta 0.
+peanoToNat(s(X), N) :-
+    peanoToNat(X, N1),
+    N is N1 + 1.
+
+%%% is_nat/2. is_nat(+NumInSec, -N).
+% Si NumInSec (número en la Secuencia) es un número natural, N es número de Peano.
+% Basado en:
+    % 1. http://www.lcc.uma.es/~lopez/progdec/prolog/apuntes/02-basicas/tecnicas_basicas.pdf (páginas 1 - 7)
+    % 2. https://www.uv.mx/personal/aguerra/files/2019/08/pia-slides-02.pdf (slide 45)
+    % 3. http://enciclopedia.us.es/index.php/Axiomas_de_Peano
+% N es el número de Peano, el cual se computa dentro de esta función.
+% Cuando la función unifica a 0 con NumInSec (Caso 1),
+    % N también unifica con 0 (en Caso 2).
+% Caso 1: base.
+is_nat(0, 0).
+% Caso 2: recursivo.
+is_nat(s(X), N) :-
+    is_nat(X, N1),
+    N is N1 + 1.
 
 /*sumaPeano_PersonalVersion(Sec1, Sec2, R) :-
     is_nat(Sec1, NumSec1),
@@ -31,22 +52,6 @@ restaPeano(s(X1), s(0), s(R)) :-
     % la Sencuencia2 llegue a s(0), que es cuando entra en acción el Caso 2.
 restaPeano(s(X1), s(X2), R) :-
     restaPeano(X1, X2, R).
-
-%%% is_nat/2. is_nat(+NumInSec, -N).
-% Si NumInSec (número en la Secuencia) es un número natural, N es número de Peano.
-% Basado en:
-    % 1. http://www.lcc.uma.es/~lopez/progdec/prolog/apuntes/02-basicas/tecnicas_basicas.pdf (páginas 1 - 7)
-    % 2. https://www.uv.mx/personal/aguerra/files/2019/08/pia-slides-02.pdf (slide 45)
-    % 3. http://enciclopedia.us.es/index.php/Axiomas_de_Peano
-% N es el número de Peano, el cual se computa dentro de esta función.
-% Cuando la función unifica a 0 con NumInSec (Caso 1),
-    % N también unifica con 0 (en Caso 2).
-% Caso 1: base.
-is_nat(0, 0).
-% Caso 2: recursivo.
-is_nat(s(X), N) :-
-    is_nat(X, N1),
-    N is N1 + 1.
 
 %%% subset/2. subset(+ConjuntoA, +ConjuntoB).
 % ConjuntoA es subconjunto de ConjuntoB.
