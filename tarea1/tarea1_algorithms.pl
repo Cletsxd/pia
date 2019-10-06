@@ -10,7 +10,7 @@ peanoToNat(Sec, N) :-
 
 %%% sumaPeano/3. sumaPeano(+Secuencia1, +Secuencia2, -Resultado).
 % Resultado es la suma de Peano de Secuencia1 y Secuencia2.
-% Caso 1: base. Cuando la Sencuencia2 llega a 0, se termina el ciclo recursivo causado por Caso 1 y 2.
+% Caso 1: base. Cuando la Sencuencia2 llega a 0, se termina el ciclo recursivo causado por Caso 2 y 3.
 sumaPeano(s(0), 0, s(0)).
 % Caso 2: recursivo. Si la Secuencia1 llega a s(0), comienza a agregar la Secuencia2 a Resultado.
     % Secuencia1 solo llega a s(0) simplemente para que no se agregue un 0 y eso haga terminar el ciclo.
@@ -20,6 +20,14 @@ sumaPeano(s(0), s(X2), s(R)) :-
 sumaPeano(s(X1), Sec2, s(R)) :-
     sumaPeano(X1, Sec2, R).
 
+restaPeano(s(0), s(0), 0).
+restaPeano(s(X1), s(0), s(R)) :-
+    restaPeano(X1, s(0), R).
+restaPeano(s(X1), s(0), R) :-
+    restaPeano(X1, s(0), R).
+restaPeano(s(X1), s(X2), R) :-
+    restaPeano(X1, X2, R).
+
 %%% is_nat/2. is_nat(+NumInSec, -N).
 % Si NumInSec (número en la Secuencia) es un número natural, N es número de Peano.
 % Basado en:
@@ -28,7 +36,7 @@ sumaPeano(s(X1), Sec2, s(R)) :-
     % 3. http://enciclopedia.us.es/index.php/Axiomas_de_Peano
 % N es el número de Peano, el cual se computa dentro de esta función.
 % Cuando la función unifica a 0 con NumInSec (Caso 1),
-    % N también unifica con 0, y computa (en Caso 2).
+    % N también unifica con 0 (en Caso 2).
 % Caso 1: base.
 is_nat(0, 0).
 % Caso 2: recursivo.
