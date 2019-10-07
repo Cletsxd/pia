@@ -78,8 +78,26 @@ inter([Element | Rest], SetB, [Element | List]) :-
     member(Element, SetB),
     inter(Rest, SetB, List).
 
-/*union([Element, Rest], SetB, SetR) :-
-    member(Element, SetB).*/
+%%% union/3. union(+ConjuntoA, +ConjuntoB, -ConjuntoR).
+% El ConjuntoR es la unión del ConjuntoA con el ConjuntoB.
+% Caso 1: base. Los conjuntos A y B no tienen elementos.
+union([], [], []).
+% Caso 2: recursivo. El ConjuntoA se quedó sin elementos, por lo tanto,
+    % es momento de meter al ConjuntoR los elementos del ConjuntoB.
+union([], [Element | Rest], [Element | List]) :-
+    union([], Rest, List).
+% Caso 3: recursivo. Primer caso que se ejecuto, debido a que el Caso 1 y 2, dan falso la primera vez.
+    % Utilizado para insertar los elementos del ConjuntoA en el ConjuntoR.
+    % Solamente si el elemento cabeza no pertenece al ConjuntoR, el elemento se inserta.
+union([Element | Rest], Set2, [Element | List]) :-
+    union(Rest, Set2, List),
+    \+ member(Element, List).
+% Caso 4: recursivo. Caso para control de inserción de elementos en ConjuntoR.
+    % Si Element (elemento cabeza del ConjuntoA), pertenece a ConjuntoR, simplemente se unifica el ConjuntoR como venía.
+    % Y no es necesario insertar Element.
+union([Element | Rest], Set2, List) :-
+    union(Rest, Set2, List),
+    member(Element, List).
 
 %%% dif/3. dif(+ConjuntoA, +ConjuntoB, -ConjuntoR).
 % ConjuntoR es la diferencia entre ConjuntoA y ConjuntoB.
@@ -93,3 +111,23 @@ dif([Element | Rest], SetB, [Element | List]):-
 dif([Element | Rest], SetB, List) :-
     member(Element, SetB),
     dif(Rest, SetB, List).
+
+/*perms(Set, [Set, [List]]) :-
+    quick_sort(Set, SetOrd),
+    
+quick_sort([], []).
+quick_sort([Element | Rest], ListOrd) :-
+    split(Element, Rest, Mins, Mays),
+    quick_sort(Mins, MinsOrd),
+    quick_sort(Mays, MaysOrd),
+    append(MinsOrd, [Element | MaysOrd], ListOrd).
+
+split(_, [], [], []).
+split(Element, [Rest, RestOfRest], [Rest | Mins], Mays) :-
+    Element > Rest,
+    split(Element, RestOfRest, Mins, Mays).
+split(Element, [Rest, RestOfRest], Mins, [Rest | Mays]) :-
+    split(Element, RestOfRest, Mins, Mays).
+
+append([], Ys, Ys).
+append([X | Xs], Ys, [X | Zs]) :- append(Xs,Ys ,Zs).*/
