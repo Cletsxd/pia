@@ -1,9 +1,9 @@
-%%% peanoNat/2. peanoNat(+Secuencia, -N).
+%%% peanoToNat/2. peanoToNat(+Secuencia, -N).
 % Basado en is_nat/2.
 % N es el número de Peano dada una Secuencia. Ej. peanoNat(s(s(s(0))), N).
-% Caso 1: base. Cuando la Secuencia llega a 0, entonces \theta = {N/0}.
+% Caso 1: base. Cuando la Secuencia llega a 0, entonces N unifica con 0.
 peanoToNat(0, 0).
-% Caso 2: recursivo. Función que se dedica a sumar los sucesores y a reducir a Secuencia hasta 0.
+% Caso 2: recursivo. Función que se dedica a sumar los sucesores y a reducir la Secuencia hasta 0.
 peanoToNat(s(X), N) :-
     peanoToNat(X, N1),
     N is N1 + 1.
@@ -16,7 +16,7 @@ peanoToNat(s(X), N) :-
     % 3. http://enciclopedia.us.es/index.php/Axiomas_de_Peano
 % N es el número de Peano, el cual se computa dentro de esta función.
 % Cuando la función unifica a 0 con NumInSec (Caso 1),
-    % N también unifica con 0 (en Caso 2).
+    % N también unifica con 0 (desde Caso 2).
 % Caso 1: base.
 is_nat(0, 0).
 % Caso 2: recursivo.
@@ -112,22 +112,14 @@ dif([Element | Rest], SetB, List) :-
     member(Element, SetB),
     dif(Rest, SetB, List).
 
-/*perms(Set, [Set, [List]]) :-
-    quick_sort(Set, SetOrd),
-    
-quick_sort([], []).
-quick_sort([Element | Rest], ListOrd) :-
-    split(Element, Rest, Mins, Mays),
-    quick_sort(Mins, MinsOrd),
-    quick_sort(Mays, MaysOrd),
-    append(MinsOrd, [Element | MaysOrd], ListOrd).
+perms(List, ListRes) :-
+    findall(Perm, permute(List, Perm), ListRes).
 
-split(_, [], [], []).
-split(Element, [Rest, RestOfRest], [Rest | Mins], Mays) :-
-    Element > Rest,
-    split(Element, RestOfRest, Mins, Mays).
-split(Element, [Rest, RestOfRest], Mins, [Rest | Mays]) :-
-    split(Element, RestOfRest, Mins, Mays).
-
-append([], Ys, Ys).
-append([X | Xs], Ys, [X | Zs]) :- append(Xs,Ys ,Zs).*/
+% basado en: 
+    % - https://www.swi-prolog.org/pldoc/man?predicate=permutation/2
+    % - https://www.swi-prolog.org/pldoc/man?predicate=select/3
+    % - https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lists.pl?show=src
+permute([], []).
+permute([X|Rest], L) :-
+    permute(Rest, L1),
+    select(X, L, L1). % implementar
