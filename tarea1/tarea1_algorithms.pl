@@ -1,3 +1,63 @@
+%%% unify/4. unify(+Term1, +Term2, -Unifiable, -Substitution).
+% Sean Term1 y Term2, dos términos.
+% Caso 1: base. Cuando (Term1 es variable o Term2 es variable) y son iguales.
+% Salida: Unifiable = 1, Substitution = [].
+unify(Term1, Term2, 1, []) :-
+    are_variables(Term1, Term2),
+    wts_variable(Term1, Term2, X, T),
+    eqls(X, T).
+
+% Caso 2: base. Cuando (Term1 es variable o Term2 es variable), pero no son iguales y (X ocurre en T).
+% Salida: Unifiable = 0.
+unify(Term1, Term2, 0, _) :-
+    are_variables(Term1, Term2),
+    wts_variable(Term1, Term2, X, T),
+    \+ eqls(X, T),
+    ocurr(X, T).
+
+% Caso 3: base. Cuando (Term1 es variable o Term2 es variable), no son iguales y (X no ocurre en T).
+% Salida: Unifiable = 1, Substitution = T/X.
+unify(Term1, Term2, 1, T/X) :-
+    are_variables(Term1, Term2),
+    wts_variable(Term1, Term2, X, T),
+    \+ eqls(X, T),
+    \+ ocurr(X, T).
+
+unify(Term1, Term2, 0, _) :-
+    \+ are_variables(Term1, Term2),
+    write("No variables").
+    /*count_vars(Term1, C1),
+    count_vars(Term2, C2),
+    eqls(Term1, Term2); C1 == C2,
+    Unifiable is false.*/
+
+/*unify(Term1, Term2, Unifiable, Substitution) :-
+    \+ are_variables(Term1, Term2),
+    K is 0,
+    Unifiable is true,
+    Substitution is nil,*/
+
+ocurr(X, T):-
+    variables(T, Vars),
+    member(X, Vars).
+
+variables(W, L) :-
+    term_variables(W, L).
+
+are_variables(T1, T2) :-
+    var(T1), !;
+    var(T2).
+
+wts_variable(T1, T2, T1, T2) :-
+    var(T1).
+
+wts_variable(T1, T2, T2, T1) :-
+    \+ var(T1),
+    var(T2).
+
+eqls(X, T) :-
+    X == T.
+
 %%% peanoToNat/2. peanoToNat(+Secuencia, -N).
 % Basado en is_nat/2.
 % N es el número de Peano dada una Secuencia. Ej. peanoNat(s(s(s(0))), N).
@@ -112,14 +172,21 @@ dif([Element | Rest], SetB, List) :-
     member(Element, SetB),
     dif(Rest, SetB, List).
 
-perms(List, ListRes) :-
-    findall(Perm, permute(List, Perm), ListRes).
-
-% basado en: 
+/*% basado en: 
     % - https://www.swi-prolog.org/pldoc/man?predicate=permutation/2
     % - https://www.swi-prolog.org/pldoc/man?predicate=select/3
-    % - https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lists.pl?show=src
-permute([], []).
-permute([X|Rest], L) :-
-    permute(Rest, L1),
-    select(X, L, L1). % implementar
+    % - https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lists.pl?show=src*/
+perms(List, ListRes) :-
+    findall(Perm, per(List, Perm), ListRes).
+
+per([], []).
+per([Element | Rest], Perm) :-
+    value_in(Element, Perm, List),
+    per(Rest, List).
+
+value_in(Element, [ElementP | RestP], List) :-
+    create_permute(RestP, ElementP, Element, List).
+
+create_permute(RestP, ElementP, ElementP, RestP).
+create_permute([FirstElement | Rest], ElementP, Element, [ElementP | RestP]) :-
+    create_permute(Rest, FirstElement, Element, RestP).
