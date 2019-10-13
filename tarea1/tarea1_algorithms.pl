@@ -5,44 +5,52 @@
 unify(Term1, Term2, 1, []) :-
     are_variables(Term1, Term2),
     wts_variable(Term1, Term2, X, T),
-    eqls(X, T).
+    X == T.
 
 % Caso 2: base. Cuando (Term1 es variable o Term2 es variable), pero no son iguales y (X ocurre en T).
 % Salida: Unifiable = 0.
 unify(Term1, Term2, 0, _) :-
     are_variables(Term1, Term2),
     wts_variable(Term1, Term2, X, T),
-    \+ eqls(X, T),
+    \+ X == T,
     ocurr(X, T).
 
 % Caso 3: base. Cuando (Term1 es variable o Term2 es variable), no son iguales y (X no ocurre en T).
 % Salida: Unifiable = 1, Substitution = T/X.
-unify(Term1, Term2, 1, T/X) :-
+unify(Term1, Term2, 1, [X/T]) :-
     are_variables(Term1, Term2),
     wts_variable(Term1, Term2, X, T),
-    \+ eqls(X, T),
+    \+ X == T,
     \+ ocurr(X, T).
 
 unify(Term1, Term2, 0, _) :-
     \+ are_variables(Term1, Term2),
-    write("No variables").
-    /*count_vars(Term1, C1),
+    count_vars(Term1, C1),
     count_vars(Term2, C2),
-    eqls(Term1, Term2); C1 == C2,
-    Unifiable is false.*/
+    C1 \= C2;
+    get_nfuct(Term1, X),
+    get_nfuct(Term2, M),
+    X \= M.
 
-/*unify(Term1, Term2, Unifiable, Substitution) :-
+unify(Term1, Term2, Unifiable, Substitution) :-
     \+ are_variables(Term1, Term2),
     K is 0,
-    Unifiable is true,
-    Substitution is nil,*/
+    get_nfuct(Term1, X),
+    get_nfuct(Term2, M),
+    w_loop(K, X, M, Unifiable, Substitution).
 
-ocurr(X, T):-
-    variables(T, Vars),
-    member(X, Vars).
+w_loop(K, X, M, U, S) :-
+    K < M,
+    K1 is K + 1,
 
-variables(W, L) :-
-    term_variables(W, L).
+ocurr(X, T) :-
+    term_variables(T, Vars),
+    verif(X, Vars).
+
+verif(_, []).
+verif(X, [H | T]) :-
+    X == H,
+    verif(X, T).
 
 are_variables(T1, T2) :-
     var(T1), !;
@@ -55,8 +63,11 @@ wts_variable(T1, T2, T2, T1) :-
     \+ var(T1),
     var(T2).
 
-eqls(X, T) :-
-    X == T.
+count_vars(T, V) :-
+    functor(T, _, V).
+
+get_nfuct(T, N) :-
+    functor(T, N, _).
 
 %%% peanoToNat/2. peanoToNat(+Secuencia, -N).
 % Basado en is_nat/2.
