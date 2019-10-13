@@ -25,23 +25,33 @@ unify(Term1, Term2, 1, [X/T]) :-
 
 unify(Term1, Term2, 0, _) :-
     \+ are_variables(Term1, Term2),
-    count_vars(Term1, C1),
-    count_vars(Term2, C2),
-    C1 \= C2;
-    get_nfuct(Term1, X),
-    get_nfuct(Term2, M),
+    functor(Term1, F, X),
+    functor(Term2, G, M),
+    F \= G, !;
     X \= M.
 
 unify(Term1, Term2, Unifiable, Substitution) :-
     \+ are_variables(Term1, Term2),
     K is 0,
-    get_nfuct(Term1, X),
-    get_nfuct(Term2, M),
-    w_loop(K, X, M, Unifiable, Substitution).
+    functor(Term1, _, X),
+    functor(Term2, _, M),
+    % Basado en:
+        % https://www.swi-prolog.org/pldoc/doc/_SWI_/library/occurs.pl?show=src
+        % https://www.swi-prolog.org/pldoc/doc_for?object=arg/3
+        % https://www.swi-prolog.org/pldoc/doc_for?object=compound/1
+    findall(Args, arg(_, Term1, Args), ArgsT1),
+    findall(Args, arg(_, Term2, Args), ArgsT2),
+    check_unify_loop(ArgsT1, ArgsT2, K, X, M, Unifiable, Substitution).
 
-w_loop(K, X, M, U, S) :-
+check_unify_loop(_, _, K, _, M, _, []) :-
+    K == M.
+check_unify_loop([AT1 | RestArgsT1], [AT2 | RestArgsT2], K, X, M, U, [S | RestS]) :-
     K < M,
+    unify(AT1, AT2, U, S),
     K1 is K + 1,
+    check_unify_loop(RestArgsT1, RestArgsT2, K1, X, M, U, RestS),
+    U == 1,
+    write("Bien").
 
 ocurr(X, T) :-
     term_variables(T, Vars),
@@ -62,12 +72,6 @@ wts_variable(T1, T2, T1, T2) :-
 wts_variable(T1, T2, T2, T1) :-
     \+ var(T1),
     var(T2).
-
-count_vars(T, V) :-
-    functor(T, _, V).
-
-get_nfuct(T, N) :-
-    functor(T, N, _).
 
 %%% peanoToNat/2. peanoToNat(+Secuencia, -N).
 % Basado en is_nat/2.
