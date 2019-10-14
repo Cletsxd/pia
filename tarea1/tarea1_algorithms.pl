@@ -12,16 +12,13 @@ unify(Term1, Term2, 1, []) :-
 unify(Term1, Term2, 0, _) :-
     are_variables(Term1, Term2),
     wts_variable(Term1, Term2, X, T),
-    \+ X == T,
     ocurr(X, T).
 
 % Caso 3: base. Cuando (Term1 es variable o Term2 es variable), no son iguales y (X no ocurre en T).
 % Salida: Unifiable = 1, Substitution = T/X.
 unify(Term1, Term2, 1, [X/T]) :-
     are_variables(Term1, Term2),
-    wts_variable(Term1, Term2, X, T),
-    \+ X == T,
-    \+ ocurr(X, T).
+    wts_variable(Term1, Term2, X, T).
 
 unify(Term1, Term2, 0, _) :-
     \+ are_variables(Term1, Term2),
@@ -50,8 +47,7 @@ check_unify_loop([AT1 | RestArgsT1], [AT2 | RestArgsT2], K, X, M, U, [S | RestS]
     unify(AT1, AT2, U, S),
     K1 is K + 1,
     check_unify_loop(RestArgsT1, RestArgsT2, K1, X, M, U, RestS),
-    U == 1,
-    write("Bien").
+    U == 1.
 
 ocurr(X, T) :-
     term_variables(T, Vars),
@@ -191,13 +187,22 @@ dif([Element | Rest], SetB, List) :-
     % - https://www.swi-prolog.org/pldoc/man?predicate=permutation/2
     % - https://www.swi-prolog.org/pldoc/man?predicate=select/3
     % - https://www.swi-prolog.org/pldoc/doc/_SWI_/library/lists.pl?show=src*/
+
+%%% perms/2. perms(+List, -ListRes).
+%%% List es una lista con valores en cierto orden que vana ser permutados.
+%%% ListRes es una lista de listas con los valores de las permutaciones.
+%%% Caso 1: principal. Esta función manda a llamar a findall/3, que a su vez llama a per/2, la cual realiza una permutación.
 perms(List, ListRes) :-
     findall(Perm, per(List, Perm), ListRes).
 
+%%% per/2. per(+List, -Perm).
+%%% Recibe una lista de elementos y devuelve un resultado con la lista permutada.
+%%% Caso 1: base. Cuando List sea vacío devuelve una lista vacía y se concatena en el siguiente caso.
 per([], []).
-per([Element | Rest], Perm) :-
+%%% Caso 2: recursivo. Crea una permutación.
+per(Perm, [Element | Rest]) :-
     value_in(Element, Perm, List),
-    per(Rest, List).
+    per(List, Rest).
 
 value_in(Element, [ElementP | RestP], List) :-
     create_permute(RestP, ElementP, Element, List).
