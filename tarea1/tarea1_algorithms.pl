@@ -15,11 +15,14 @@ unify(Term1, Term2, 0, _) :-
     ocurr(X, T).
 
 % Caso 3: base. Cuando (Term1 es variable o Term2 es variable), no son iguales y (X no ocurre en T).
-% Salida: Unifiable = 1, Substitution = T/X.
+% Salida: Unifiable = 1, Substitution = X/T.
 unify(Term1, Term2, 1, [X/T]) :-
     are_variables(Term1, Term2),
     wts_variable(Term1, Term2, X, T).
 
+% Caso 4: base. Cuando (Term 1 o Term2 no es variable), ambos son functores o átomos.
+% Los nombres deben ser diferentes y la aridad de ambos deben ser también diferentes.
+% Salida: Unifiable = 0.
 unify(Term1, Term2, 0, _) :-
     \+ are_variables(Term1, Term2),
     functor(Term1, F, X),
@@ -27,6 +30,8 @@ unify(Term1, Term2, 0, _) :-
     F \= G, !;
     X \= M.
 
+% Caso 5: recursivo. Cuando Term1 y Term2 son functores y traen consigo variables o átomos (argumentos).
+% Salida: Unifiable = 1, Substitution = [lista de sustituciones].
 unify(Term1, Term2, Unifiable, Substitution) :-
     \+ are_variables(Term1, Term2),
     K is 0,
@@ -40,8 +45,16 @@ unify(Term1, Term2, Unifiable, Substitution) :-
     findall(Args, arg(_, Term2, Args), ArgsT2),
     check_unify_loop(ArgsT1, ArgsT2, K, X, M, Unifiable, Substitution).
 
+% check_unify_loop/7. check_unify_loop(+ArgsT1, +ArgsT2, +K, +X, +M, -Unifiable, -Substution).
+% ArgsT1 y Args2: los argumentos de los functores Term1 y Term2.
+% K: contador, el cual ayuda a recorrer los argumentos respecto a la aridad del Term2 (M).
+% X: aridad de Term1.
+% M: aridad de Term2.
+% Salida: Unifiable = 1, Substitution = [lista de sustituciones].
+% Caso 1: base. Cuando el contador K llega al valor de la aridad M, se rompe el ciclo.
 check_unify_loop(_, _, K, _, M, _, []) :-
     K == M.
+% Caso 2: recursivo. Recorre las listas de los argumentos de Term1 y Term2. Y checa unificación.
 check_unify_loop([AT1 | RestArgsT1], [AT2 | RestArgsT2], K, X, M, U, [S | RestS]) :-
     K < M,
     unify(AT1, AT2, U, S),
@@ -49,22 +62,36 @@ check_unify_loop([AT1 | RestArgsT1], [AT2 | RestArgsT2], K, X, M, U, [S | RestS]
     check_unify_loop(RestArgsT1, RestArgsT2, K1, X, M, U, RestS),
     U == 1.
 
+% ocurr/2. ocurr(+X, +Term).
+% X ocurre en Term.
+% Caso 1: principal. Revisa si hay alguna ocurrencia de X en Term.
 ocurr(X, T) :-
     term_variables(T, Vars),
     verif(X, Vars).
 
+% verif/2. verif(+X, +List).
+% Revisa los elementos de List y compara contra X. Si X == H, devuelve true.
+% Caso 1: base. Cuando List es vacía.
 verif(_, []).
+% Caso 2: recursivo. Si List no es vacía, sigue recorriendo hasta encontrar el valor de X, o
+% en su defecto, encontrar una lista vacía en List.
 verif(X, [H | T]) :-
     X == H,
     verif(X, T).
 
+% are_variables/2. are_variables(+Term1, +Term2).
+% Pregunta si Term1 o Term2 son variables.
+% Caso 1: principal.
 are_variables(T1, T2) :-
     var(T1), !;
     var(T2).
 
+% wts_variable/4. wts_variable(+Term1, +Term2, -X, -T).
+% Si Term1 es una variable, Term2 es un término (puede ser átomo o fuctor).
+% Caso 1: base principal.
 wts_variable(T1, T2, T1, T2) :-
     var(T1).
-
+% Caso 2: secundario. Si Term1 no es una variable, X = Term2 y T = Term1.
 wts_variable(T1, T2, T2, T1) :-
     \+ var(T1),
     var(T2).
@@ -204,9 +231,13 @@ per(Perm, [Element | Rest]) :-
     value_in(Element, Perm, List),
     per(List, Rest).
 
+%%% value_in/3. value_in(+Element, +Perm, -List)
+%%% Caso 1: hace un intercambio que va acomodando los elementos, de manera que se crean varias combinaciones.
 value_in(Element, [ElementP | RestP], List) :-
     create_permute(RestP, ElementP, Element, List).
 
+%%% create_permute/3. create_permute(+RestP, +ElementP, +Element, -List).
+%%% Caso 1: base. Crea una combinación.
 create_permute(RestP, ElementP, ElementP, RestP).
 create_permute([FirstElement | Rest], ElementP, Element, [ElementP | RestP]) :-
     create_permute(Rest, FirstElement, Element, RestP).
